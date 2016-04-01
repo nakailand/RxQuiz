@@ -7,12 +7,25 @@
 //
 
 import UIKit
+import RxSwift
+import RxCocoa
 
 class ViewController: UIViewController {
 
+    @IBOutlet weak var startButton: UIButton!
+    let disposeBag = DisposeBag()
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        startButton.rx_tap
+            .subscribeNext {
+                let storyBoard = UIStoryboard(name: "Quiz", bundle: NSBundle.mainBundle())
+                let quizViewController = storyBoard.instantiateInitialViewController() as! QuizViewController
+                self.addChildViewController(quizViewController)
+                self.view.addSubview(quizViewController.view)
+                self.didMoveToParentViewController(self)
+
+        }
+        .addDisposableTo(disposeBag)
     }
 
     override func didReceiveMemoryWarning() {
