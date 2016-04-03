@@ -23,7 +23,6 @@ class ViewController: UIViewController {
                 self.addChildViewController(quizViewController)
                 self.view.addSubview(quizViewController.view)
                 self.didMoveToParentViewController(self)
-
         }
         .addDisposableTo(disposeBag)
     }
@@ -32,7 +31,5 @@ class ViewController: UIViewController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
-
 }
 
