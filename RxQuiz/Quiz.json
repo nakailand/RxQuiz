@@ -1,6 +1,6 @@
 {
     "questions": [
-                  { "answer" : "merge", "before_image" : "before_merge", "after_image" : "after_merge" },
-                  { "answer" : "concat", "before_image" : "before_merge", "after_image" : "after_merge" }
+                  { "answer" : "merge", "beforeImage" : "before_merge", "afterImage" : "after_merge" },
+                  { "answer" : "concat", "beforeImage" : "before_merge", "afterImage" : "after_merge" }
                   ]
 }

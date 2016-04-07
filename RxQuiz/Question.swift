@@ -9,7 +9,7 @@
 import Foundation
 
 struct Question {
-    let before_image: String
-    let after_image: String
+    let beforeImage: String
+    let afterImage: String
     let answer: String
 }

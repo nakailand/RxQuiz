@@ -104,6 +104,41 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		84B43FFA1CB6E76100AD1A23 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				D4B3A20B1CAD09350075AB4C /* ViewController.swift */,
+				D4B3A2461CAD26360075AB4C /* QuizViewController.swift */,
+			);
+			name = ViewController;
+			sourceTree = "<group>";
+		};
+		84B43FFB1CB6E76E00AD1A23 /* Storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				D4B3A2481CAD26480075AB4C /* Quiz.storyboard */,
+				D4B3A20D1CAD09350075AB4C /* Main.storyboard */,
+			);
+			name = Storyboard;
+			sourceTree = "<group>";
+		};
+		84B43FFC1CB6E78B00AD1A23 /* Additions */ = {
+			isa = PBXGroup;
+			children = (
+				D4B3A24F1CAD61880075AB4C /* MutableColletionType+Additions.swift */,
+				D4B3A24D1CAD61710075AB4C /* CollectionType+Additions.swift */,
+			);
+			name = Additions;
+			sourceTree = "<group>";
+		};
+		84B43FFD1CB6E79A00AD1A23 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D4B3A2511CAD61A10075AB4C /* Question.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		8B833C239D97313BACE345F1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -146,15 +181,12 @@
 		D4B3A2081CAD09350075AB4C /* RxQuiz */ = {
 			isa = PBXGroup;
 			children = (
+				84B43FFD1CB6E79A00AD1A23 /* Model */,
+				84B43FFC1CB6E78B00AD1A23 /* Additions */,
+				84B43FFB1CB6E76E00AD1A23 /* Storyboard */,
+				84B43FFA1CB6E76100AD1A23 /* ViewController */,
 				D4B3A24A1CAD2E2A0075AB4C /* JSON */,
 				D4B3A2091CAD09350075AB4C /* AppDelegate.swift */,
-				D4B3A20B1CAD09350075AB4C /* ViewController.swift */,
-				D4B3A2461CAD26360075AB4C /* QuizViewController.swift */,
-				D4B3A24F1CAD61880075AB4C /* MutableColletionType+Additions.swift */,
-				D4B3A24D1CAD61710075AB4C /* CollectionType+Additions.swift */,
-				D4B3A2511CAD61A10075AB4C /* Question.swift */,
-				D4B3A2481CAD26480075AB4C /* Quiz.storyboard */,
-				D4B3A20D1CAD09350075AB4C /* Main.storyboard */,
 				D4B3A2101CAD09350075AB4C /* Assets.xcassets */,
 				D4B3A2121CAD09350075AB4C /* LaunchScreen.storyboard */,
 				D4B3A2151CAD09350075AB4C /* Info.plist */,

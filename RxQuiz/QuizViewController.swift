@@ -11,8 +11,8 @@ import RxSwift
 import RxCocoa
 
 final class QuizViewController: UIViewController {
-    let answers = ["merge", "map", "reduce", "filter", "concat", "zip"]
-    let disposeBag = DisposeBag()
+    private let answers = ["merge", "map", "reduce", "filter", "concat", "zip"]
+    private let disposeBag = DisposeBag()
     @IBOutlet weak var beforeImageView: UIImageView!
     @IBOutlet weak var afterImageView: UIImageView!
     @IBOutlet weak var answerButton1: UIButton!
@@ -20,40 +20,95 @@ final class QuizViewController: UIViewController {
     @IBOutlet weak var answerButton3: UIButton!
     @IBOutlet weak var answerButton4: UIButton!
     private var answer: String!
-    var questions: [Question] = []
-    var count = Variable<Int>(0)
-    var correctCount = 0
-    var startDate = NSDate()
+    private let questions = Variable<[Question]>([])
+    private let currentQuestionIndex = Variable<Int>(0)
+    private var correctCount = 0
+    private var startDate = NSDate()
+    private let currentQuestion = Variable<Question>(Question(beforeImage: "", afterImage: "", answer: ""))
+    private let currentAnswer = Variable<String>("")
     
     private var buttons: [UIButton]  {
         return [answerButton1, answerButton2, answerButton3, answerButton4]
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        prepareQuestions()
-        setButtonAction()
-        count.asObservable()
-            .subscribeNext { [unowned self] count in
-                if count == 2 {
-                    self.showTime()
-                    return
+        
+        questions.asObservable()
+            .filter { $0.isEmpty }
+            .observeOn(MainScheduler.instance)
+            .subscribeNext { [unowned self] _ in
+                let path = NSBundle.mainBundle().pathForResource("Quiz", ofType: "json")
+                let data = NSData(contentsOfFile: path!)
+                do {
+                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableContainers) as! NSDictionary
+                    let questions = json.objectForKey("questions") as! NSArray
+                    questions.forEach { [unowned self] question in
+                        self.questions.value.append(
+                            Question(
+                                beforeImage: question["beforeImage"] as! String,
+                                afterImage: question["afterImage"] as! String,
+                                answer: question["answer"] as! String
+                            )
+                        )
+                    }
+                } catch  {
+                    print(error)
                 }
-                self.setQuestion(count)
-                self.setAnswers(count)
+            }
+            .addDisposableTo(disposeBag)
+        
+        buttons.forEach { button in
+            button.rx_tap
+                .subscribeNext { [unowned self] in
+                    if self.isCorrect(button.titleLabel!.text!) {
+                        self.correctCount += 1
+                    }
+                    self.currentQuestionIndex.value += 1
+                }
+                .addDisposableTo(disposeBag)
+        }
+        
+        currentQuestionIndex.asObservable()
+            .subscribeNext { [unowned self] count in
+                switch count {
+                case 2:
+                    self.showTime()
+                default:
+                    let question = self.questions.value[count]
+                    self.currentQuestion.value = question
+                    self.currentAnswer.value = question.answer
+                }
+            }
+            .addDisposableTo(disposeBag)
+        
+        currentAnswer.asObservable()
+            .subscribeNext { [unowned self] answer in
+                let incorrectAnswers = self.answers.filter { $0 != answer }.shuffle()[0...2]
+                let answerArray = [answer, incorrectAnswers[0], incorrectAnswers[1], incorrectAnswers[2]].shuffle()
+                self.buttons.enumerate().forEach{ (number, button) in
+                    button.setTitle(answerArray[number], forState: .Normal)
+                }
+            }
+            .addDisposableTo(disposeBag)
+        
+        currentQuestion.asObservable()
+            .subscribeNext { [unowned self] question in
+                self.beforeImageView.image = UIImage(named: question.beforeImage)
+                self.afterImageView.image = UIImage(named: question.afterImage)
             }
             .addDisposableTo(disposeBag)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
     private func restart() {
-        self.prepareQuestions()
-        self.count.value = 0
-        self.correctCount = 0
-        self.startDate = NSDate()
+        questions.value.removeAll()
+        currentQuestionIndex.value = 0
+        correctCount = 0
+        startDate = NSDate()
     }
     
     private func showTime() {
@@ -69,65 +124,13 @@ final class QuizViewController: UIViewController {
             self.restart()
         }
         let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { action in
-            self.restart()
         }
         alertController.addAction(okAction)
         alertController.addAction(shareAction)
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
-    private func prepareQuestions() {
-        let path = NSBundle.mainBundle().pathForResource("Quiz", ofType: "json")
-        let data = NSData(contentsOfFile: path!)
-        questions = []
-        do {
-            let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableContainers) as! NSDictionary
-            let array = json.objectForKey("questions") as! NSArray
-            for element in array {
-                questions.append(Question(before_image: element["before_image"] as! String, after_image: element["after_image"] as! String, answer: element["answer"] as! String))
-            }
-        } catch  {
-            print(error)
-        }
-    }
-    
-    private func segueToStartViewController() {
-        self.willMoveToParentViewController(nil)
-        self.view.removeFromSuperview()
-        self.removeFromParentViewController()
-    }
-
-    private func checkAnswer(myAnswer: String) -> Bool {
-        return myAnswer == answer
-    }
-
-    private func setButtonAction() {
-        buttons.forEach { button in
-            button.rx_tap
-                .subscribeNext { [unowned self] in
-                    if(self.checkAnswer(button.titleLabel!.text!)) {
-                        self.correctCount += 1
-                    }
-                    self.count.value += 1
-                }
-                .addDisposableTo(disposeBag)
-        }
-    }
-
-    private func setQuestion(count: Int) {
-        let question = questions[count]
-        answer = question.answer
-        beforeImageView.image = UIImage(named: question.before_image)
-        afterImageView.image = UIImage(named: question.after_image)
-    }
-
-    private func setAnswers(count: Int) {
-        let answer = questions[count].answer
-        let ans = answers.filter { $0 != answer }.shuffle()[0...2]
-        let an = [answer, ans[0], ans[1], ans[2]].shuffle()
-        buttons.enumerate().forEach{ (number, button) in
-            button.setTitle(an[number], forState: .Normal)
-        }
+    private func isCorrect(myAnswer: String) -> Bool {
+        return myAnswer == currentAnswer.value
     }
 }
-
