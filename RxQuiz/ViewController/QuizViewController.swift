@@ -11,19 +11,20 @@ import RxSwift
 import RxCocoa
 
 final class QuizViewController: UIViewController {
-    private let answers = ["merge", "map", "reduce", "filter", "concat", "zip"]
-    private let disposeBag = DisposeBag()
+    private var message = ""
+    private var startDate = NSDate()
     @IBOutlet weak var beforeImageView: UIImageView!
     @IBOutlet weak var afterImageView: UIImageView!
     @IBOutlet weak var answerButton1: UIButton!
     @IBOutlet weak var answerButton2: UIButton!
     @IBOutlet weak var answerButton3: UIButton!
     @IBOutlet weak var answerButton4: UIButton!
-    private var answer: String!
+    
+    private let answers = ["merge", "map", "reduce", "filter", "concat", "zip"]
+    private let disposeBag = DisposeBag()
     private let questions = Variable<[Question]>([])
     private let currentQuestionIndex = Variable<Int>(0)
-    private var correctCount = 0
-    private var startDate = NSDate()
+    private let correctAnswerCount = Variable<Int>(0)
     private let currentQuestion = Variable<Question>(Question(beforeImage: "", afterImage: "", answer: ""))
     private let currentAnswer = Variable<String>("")
     
@@ -62,7 +63,7 @@ final class QuizViewController: UIViewController {
             button.rx_tap
                 .subscribeNext { [unowned self] in
                     if self.isCorrect(button.titleLabel!.text!) {
-                        self.correctCount += 1
+                        self.correctAnswerCount.value += 1
                     }
                     self.currentQuestionIndex.value += 1
                 }
@@ -82,6 +83,13 @@ final class QuizViewController: UIViewController {
             }
             .addDisposableTo(disposeBag)
         
+        currentQuestion.asObservable()
+            .subscribeNext { [unowned self] question in
+                self.beforeImageView.image = UIImage(named: question.beforeImage)
+                self.afterImageView.image = UIImage(named: question.afterImage)
+            }
+            .addDisposableTo(disposeBag)
+        
         currentAnswer.asObservable()
             .subscribeNext { [unowned self] answer in
                 let incorrectAnswers = self.answers.filter { $0 != answer }.shuffle()[0...2]
@@ -92,12 +100,17 @@ final class QuizViewController: UIViewController {
             }
             .addDisposableTo(disposeBag)
         
-        currentQuestion.asObservable()
-            .subscribeNext { [unowned self] question in
-                self.beforeImageView.image = UIImage(named: question.beforeImage)
-                self.afterImageView.image = UIImage(named: question.afterImage)
-            }
-            .addDisposableTo(disposeBag)
+        correctAnswerCount.asObservable()
+            .subscribeNext { [unowned self] count in
+                switch count {
+                case 0 ..< 3: self.message = "乙"
+                case 3 ..< 6: self.message = "なかなか"
+                case 6 ..< 9: self.message = "おしい"
+                case 10: self.message = "完璧"
+                default: self.message = "お疲れ"
+                }
+        }
+        .addDisposableTo(disposeBag)
     }
     
     override func didReceiveMemoryWarning() {
@@ -107,7 +120,7 @@ final class QuizViewController: UIViewController {
     private func restart() {
         questions.value.removeAll()
         currentQuestionIndex.value = 0
-        correctCount = 0
+        correctAnswerCount.value = 0
         startDate = NSDate()
     }
     
@@ -118,8 +131,8 @@ final class QuizViewController: UIViewController {
         let ss = time - Double(hh * 3600 + mm * 60)
         let timeString = String(format: "%02d:%02d:%f", hh, mm, ss)
         
-        let alertController = UIAlertController(title: "10問中\(correctCount)問正解", message:
-            "タイム \(timeString)", preferredStyle: .Alert)
+        let alertController = UIAlertController(title: "10問中\(correctAnswerCount.value)問正解", message:
+            "タイム \(timeString)\n\(message)", preferredStyle: .Alert)
         let okAction = UIAlertAction(title: "もう一度", style: .Default) { action in
             self.restart()
         }
