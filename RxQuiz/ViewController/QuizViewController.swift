@@ -10,6 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import Argo
+import AVFoundation
 
 final class QuizViewController: UIViewController {
     private var message = ""
@@ -35,7 +36,7 @@ final class QuizViewController: UIViewController {
         "combineLatest",
         "concat",
         "reduce((x, y) => x + y)",
-        "indIndex(x => x > 10)"
+        "findIndex(x => x > 10)"
     ]
     
     private let disposeBag = DisposeBag()
@@ -51,6 +52,18 @@ final class QuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        guard let correctSoundPath = NSBundle.mainBundle().pathForResource("correct", ofType: "mp3"),
+            correctSoundAudioPlayer = try? AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: correctSoundPath), fileTypeHint: "mp3") else {
+                return
+        }
+        correctSoundAudioPlayer.prepareToPlay()
+        
+        guard let incorrectSoundPath = NSBundle.mainBundle().pathForResource("incorrect", ofType: "mp3"),
+            incorrectSoundAudioPlayer = try? AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: incorrectSoundPath), fileTypeHint: "mp3") else {
+                return
+        }
+        incorrectSoundAudioPlayer.prepareToPlay()
         
         questions.asObservable()
             .filter { $0.isEmpty }
@@ -70,6 +83,9 @@ final class QuizViewController: UIViewController {
                 .subscribeNext { [unowned self] in
                     if button.titleLabel!.text! == self.currentAnswer.value {
                         self.correctAnswerCount.value += 1
+                        correctSoundAudioPlayer.play()
+                    } else {
+                        incorrectSoundAudioPlayer.play()
                     }
                     self.currentQuestionIndex.value += 1
                 }

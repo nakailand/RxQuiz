@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
@@ -43,52 +42,28 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LZd-Tq-9r4">
-                                <rect key="frame" x="0.0" y="556" width="300" height="44"/>
+                                <rect key="frame" x="0.0" y="540" width="300" height="60"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="LZd-Tq-9r4" secondAttribute="height" multiplier="100:19" id="64Y-Nu-ORl"/>
-                                    <constraint firstAttribute="height" constant="44" id="if5-su-viB"/>
-                                    <constraint firstAttribute="width" secondItem="LZd-Tq-9r4" secondAttribute="height" multiplier="100:19" id="qCo-Lg-U8f"/>
+                                    <constraint firstAttribute="height" constant="60" id="if5-su-viB"/>
                                 </constraints>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="64Y-Nu-ORl"/>
-                                        <exclude reference="qCo-Lg-U8f"/>
-                                    </mask>
-                                </variation>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QAw-Th-g8b">
-                                <rect key="frame" x="300" y="556" width="300" height="44"/>
+                                <rect key="frame" x="300" y="540" width="300" height="60"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="j00-bm-AGG"/>
+                                    <constraint firstAttribute="height" constant="60" id="j00-bm-AGG"/>
                                 </constraints>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SDA-eD-aUb">
-                                <rect key="frame" x="0.0" y="512" width="300" height="44"/>
+                                <rect key="frame" x="0.0" y="480" width="300" height="60"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="3Ca-KF-PSb"/>
-                                    <constraint firstAttribute="width" secondItem="SDA-eD-aUb" secondAttribute="height" multiplier="100:19" id="Ckd-EL-s3K"/>
-                                    <constraint firstAttribute="width" secondItem="SDA-eD-aUb" secondAttribute="height" multiplier="100:19" id="tDF-g5-VUM"/>
+                                    <constraint firstAttribute="height" constant="60" id="3Ca-KF-PSb"/>
                                 </constraints>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="Ckd-EL-s3K"/>
-                                        <exclude reference="tDF-g5-VUM"/>
-                                    </mask>
-                                </variation>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lbp-Yl-kKp">
-                                <rect key="frame" x="300" y="512" width="300" height="44"/>
+                                <rect key="frame" x="300" y="480" width="300" height="60"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" secondItem="lbp-Yl-kKp" secondAttribute="height" multiplier="100:19" id="9xb-0y-l0n"/>
-                                    <constraint firstAttribute="height" constant="44" id="dwK-Sk-L68"/>
-                                    <constraint firstAttribute="width" secondItem="lbp-Yl-kKp" secondAttribute="height" multiplier="100:19" id="nl9-Lq-arK"/>
+                                    <constraint firstAttribute="height" constant="60" id="dwK-Sk-L68"/>
                                 </constraints>
-                                <variation key="default">
-                                    <mask key="constraints">
-                                        <exclude reference="9xb-0y-l0n"/>
-                                        <exclude reference="nl9-Lq-arK"/>
-                                    </mask>
-                                </variation>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
