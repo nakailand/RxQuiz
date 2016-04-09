@@ -1,6 +1,16 @@
 {
     "questions": [
                   { "answer" : "merge", "beforeImage" : "before_merge", "afterImage" : "after_merge" },
-                  { "answer" : "concat", "beforeImage" : "before_merge", "afterImage" : "after_merge" }
+                  { "answer" : "zip", "beforeImage" : "before_zip", "afterImage" : "after_zip" },
+                  { "answer" : "take(2)", "beforeImage" : "before_take", "afterImage" : "after_take" },
+                  { "answer" : "takeLast(1)", "beforeImage" : "before_takeLast", "afterImage" : "after_takeLast" },
+                  { "answer" : "sample", "beforeImage" : "before_sample", "afterImage" : "after_sample" },
+                  { "answer" : "scan", "beforeImage" : "before_scan", "afterImage" : "after_scan" },
+                  { "answer" : "combineLatest", "beforeImage" : "before_combineLatest", "afterImage" : "after_combineLatest" },
+                  { "answer" : "concat", "beforeImage" : "before_concat", "afterImage" : "after_concat" },
+                  { "answer" : "map(x => 10 * x)", "beforeImage" : "before_map", "afterImage" : "after_map" },
+                  { "answer" : "startWith(1)", "beforeImage" : "before_startWith", "afterImage" : "after_startWith" },
+                  { "answer" : "reduce((x, y) => x + y", "beforeImage" : "before_reduce", "afterImage" : "after_reduce" },
+                  { "answer" : "findIndex(x => x > 10)", "beforeImage" : "before_findIndex", "afterImage" : "after_findIndex" }
                   ]
 }

@@ -9,6 +9,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Argo
 
 final class QuizViewController: UIViewController {
     private var message = ""
@@ -20,7 +21,23 @@ final class QuizViewController: UIViewController {
     @IBOutlet weak var answerButton3: UIButton!
     @IBOutlet weak var answerButton4: UIButton!
     
-    private let answers = ["merge", "map", "reduce", "filter", "concat", "zip"]
+    private let answers = [
+        "merge",
+        "map(x => 10 * x)",
+        "reduce",
+        "filter",
+        "concat",
+        "zip",
+        "take(2)",
+        "takeLast(1)",
+        "sample",
+        "scan",
+        "combineLatest",
+        "concat",
+        "reduce((x, y) => x + y)",
+        "indIndex(x => x > 10)"
+    ]
+    
     private let disposeBag = DisposeBag()
     private let questions = Variable<[Question]>([])
     private let currentQuestionIndex = Variable<Int>(0)
@@ -39,30 +56,19 @@ final class QuizViewController: UIViewController {
             .filter { $0.isEmpty }
             .observeOn(MainScheduler.instance)
             .subscribeNext { [unowned self] _ in
-                let path = NSBundle.mainBundle().pathForResource("Quiz", ofType: "json")
-                let data = NSData(contentsOfFile: path!)
-                do {
-                    let json = try NSJSONSerialization.JSONObjectWithData(data!, options: .MutableContainers) as! NSDictionary
-                    let questions = json.objectForKey("questions") as! NSArray
-                    questions.forEach { [unowned self] question in
-                        self.questions.value.append(
-                            Question(
-                                beforeImage: question["beforeImage"] as! String,
-                                afterImage: question["afterImage"] as! String,
-                                answer: question["answer"] as! String
-                            )
-                        )
-                    }
-                } catch  {
-                    print(error)
+                let questions: [Question] = (JSONFromFile("Quiz")?["questions"].flatMap(decode))!
+                questions.shuffle().toObservable()
+                    .subscribeNext {
+                        self.questions.value.append($0)
                 }
+                .addDisposableTo(self.disposeBag)
             }
             .addDisposableTo(disposeBag)
         
         buttons.forEach { button in
             button.rx_tap
                 .subscribeNext { [unowned self] in
-                    if self.isCorrect(button.titleLabel!.text!) {
+                    if button.titleLabel!.text! == self.currentAnswer.value {
                         self.correctAnswerCount.value += 1
                     }
                     self.currentQuestionIndex.value += 1
@@ -73,8 +79,31 @@ final class QuizViewController: UIViewController {
         currentQuestionIndex.asObservable()
             .subscribeNext { [unowned self] count in
                 switch count {
-                case 2:
-                    self.showTime()
+                case self.questions.value.endIndex:
+                    let time = NSDate().timeIntervalSinceDate(self.startDate)
+                    let hh = Int(time / 3600)
+                    let mm = Int((time - Double(hh * 3600)) / 60)
+                    let ss = time - Double(hh * 3600 + mm * 60)
+                    let timeString = String(format: "%02d:%02d:%f", hh, mm, ss)
+                    
+                    let alertController = UIAlertController(
+                        title: "10問中\(self.correctAnswerCount.value)問正解",
+                        message: "タイム \(timeString)\n\(self.message)",
+                        preferredStyle: .Alert
+                    )
+                    
+                    let okAction = UIAlertAction(title: "もう一度", style: .Default) { _ in
+                        self.questions.value.removeAll()
+                        self.currentQuestionIndex.value = 0
+                        self.correctAnswerCount.value = 0
+                        self.startDate = NSDate()
+                    }
+                    
+                    let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { _ in
+                    }
+                    alertController.addAction(okAction)
+                    alertController.addAction(shareAction)
+                    self.presentViewController(alertController, animated: true, completion: nil)
                 default:
                     let question = self.questions.value[count]
                     self.currentQuestion.value = question
@@ -115,35 +144,5 @@ final class QuizViewController: UIViewController {
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-    }
-    
-    private func restart() {
-        questions.value.removeAll()
-        currentQuestionIndex.value = 0
-        correctAnswerCount.value = 0
-        startDate = NSDate()
-    }
-    
-    private func showTime() {
-        let time = NSDate().timeIntervalSinceDate(self.startDate) // 現在時刻と開始時刻の差
-        let hh = Int(time / 3600)
-        let mm = Int((time - Double(hh * 3600)) / 60)
-        let ss = time - Double(hh * 3600 + mm * 60)
-        let timeString = String(format: "%02d:%02d:%f", hh, mm, ss)
-        
-        let alertController = UIAlertController(title: "10問中\(correctAnswerCount.value)問正解", message:
-            "タイム \(timeString)\n\(message)", preferredStyle: .Alert)
-        let okAction = UIAlertAction(title: "もう一度", style: .Default) { action in
-            self.restart()
-        }
-        let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { action in
-        }
-        alertController.addAction(okAction)
-        alertController.addAction(shareAction)
-        self.presentViewController(alertController, animated: true, completion: nil)
-    }
-    
-    private func isCorrect(myAnswer: String) -> Bool {
-        return myAnswer == currentAnswer.value
     }
 }
