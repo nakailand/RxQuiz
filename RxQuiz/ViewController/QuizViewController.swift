@@ -11,8 +11,10 @@ import RxSwift
 import RxCocoa
 import Argo
 import AVFoundation
+import Social
 
 final class QuizViewController: UIViewController {
+    @IBOutlet weak var timeLabel: UILabel!
     private var message = ""
     private var startDate = NSDate()
     @IBOutlet weak var beforeImageView: UIImageView!
@@ -52,6 +54,19 @@ final class QuizViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        Observable<Int>.timer(RxTimeInterval(0), period: RxTimeInterval(0.1), scheduler: MainScheduler.instance)
+            .filter { [unowned self] _ in
+                self.currentQuestionIndex.value != self.questions.value.endIndex
+            }
+            .subscribeNext { [unowned self] _ in
+                let time = -self.startDate.timeIntervalSinceNow
+                let minutes = Int(time / 60)
+                let seconds = Int(time % 60)
+                let tenthsOfSecond = Int(time * 10 % 10)
+                self.timeLabel.text = String(format: "%02d:%02d.%d",
+                    minutes, seconds, tenthsOfSecond)
+            }
+            .addDisposableTo(disposeBag)
         
         guard let correctSoundPath = NSBundle.mainBundle().pathForResource("correct", ofType: "mp3"),
             correctSoundAudioPlayer = try? AVAudioPlayer(contentsOfURL: NSURL(fileURLWithPath: correctSoundPath), fileTypeHint: "mp3") else {
@@ -65,22 +80,22 @@ final class QuizViewController: UIViewController {
         }
         incorrectSoundAudioPlayer.prepareToPlay()
         
-        questions.asObservable()
+        questions.asDriver()
             .filter { $0.isEmpty }
-            .observeOn(MainScheduler.instance)
-            .subscribeNext { [unowned self] _ in
+            .driveNext { [unowned self] _ in
                 let questions: [Question] = (JSONFromFile("Quiz")?["questions"].flatMap(decode))!
                 questions.shuffle().toObservable()
+                    .take(10)
                     .subscribeNext {
                         self.questions.value.append($0)
-                }
-                .addDisposableTo(self.disposeBag)
+                    }
+                    .addDisposableTo(self.disposeBag)
             }
             .addDisposableTo(disposeBag)
         
         buttons.forEach { button in
-            button.rx_tap
-                .subscribeNext { [unowned self] in
+            button.rx_tap.asDriver()
+                .driveNext { [unowned self] in
                     if button.titleLabel!.text! == self.currentAnswer.value {
                         self.correctAnswerCount.value += 1
                         correctSoundAudioPlayer.play()
@@ -92,31 +107,36 @@ final class QuizViewController: UIViewController {
                 .addDisposableTo(disposeBag)
         }
         
-        currentQuestionIndex.asObservable()
-            .subscribeNext { [unowned self] count in
+        currentQuestionIndex.asDriver()
+            .driveNext { [unowned self] count in
                 switch count {
                 case self.questions.value.endIndex:
-                    let time = NSDate().timeIntervalSinceDate(self.startDate)
-                    let hh = Int(time / 3600)
-                    let mm = Int((time - Double(hh * 3600)) / 60)
-                    let ss = time - Double(hh * 3600 + mm * 60)
-                    let timeString = String(format: "%02d:%02d:%f", hh, mm, ss)
-                    
-                    let alertController = UIAlertController(
-                        title: "10問中\(self.correctAnswerCount.value)問正解",
-                        message: "タイム \(timeString)\n\(self.message)",
-                        preferredStyle: .Alert
-                    )
-                    
-                    let okAction = UIAlertAction(title: "もう一度", style: .Default) { _ in
+                    func restart() {
                         self.questions.value.removeAll()
                         self.currentQuestionIndex.value = 0
                         self.correctAnswerCount.value = 0
                         self.startDate = NSDate()
                     }
                     
-                    let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { _ in
+                    let alertController = UIAlertController(
+                        title: "10問中\(self.correctAnswerCount.value)問正解",
+                        message: "\(self.timeLabel!.text!)秒\n\(self.message)",
+                        preferredStyle: .Alert
+                    )
+                    
+                    let okAction = UIAlertAction(title: "もう一度", style: .Default) { _ in
+                        restart()
                     }
+                    
+                    let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { [unowned self] _ in
+                        let composeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
+                        composeViewController.completionHandler = { _ in
+                            restart()
+                        }
+                        composeViewController.setInitialText("10問中\(self.correctAnswerCount.value)問正解\n\(self.timeLabel!.text!)秒\n\(self.message)\n#Rx検定")
+                        self.presentViewController(composeViewController, animated: true, completion: nil)
+                    }
+                    
                     alertController.addAction(okAction)
                     alertController.addAction(shareAction)
                     self.presentViewController(alertController, animated: true, completion: nil)
@@ -128,15 +148,16 @@ final class QuizViewController: UIViewController {
             }
             .addDisposableTo(disposeBag)
         
-        currentQuestion.asObservable()
-            .subscribeNext { [unowned self] question in
+        currentQuestion.asDriver()
+            .skip(1)
+            .driveNext { [unowned self] question in
                 self.beforeImageView.image = UIImage(named: question.beforeImage)
                 self.afterImageView.image = UIImage(named: question.afterImage)
             }
             .addDisposableTo(disposeBag)
         
-        currentAnswer.asObservable()
-            .subscribeNext { [unowned self] answer in
+        currentAnswer.asDriver()
+            .driveNext { [unowned self] answer in
                 let incorrectAnswers = self.answers.filter { $0 != answer }.shuffle()[0...2]
                 let answerArray = [answer, incorrectAnswers[0], incorrectAnswers[1], incorrectAnswers[2]].shuffle()
                 self.buttons.enumerate().forEach{ (number, button) in
@@ -148,14 +169,14 @@ final class QuizViewController: UIViewController {
         correctAnswerCount.asObservable()
             .subscribeNext { [unowned self] count in
                 switch count {
-                case 0 ..< 3: self.message = "乙"
-                case 3 ..< 6: self.message = "なかなか"
-                case 6 ..< 9: self.message = "おしい"
-                case 10: self.message = "完璧"
-                default: self.message = "お疲れ"
+                case 0 ..< 3: self.message = "Rx素人です"
+                case 3 ..< 6: self.message = "Rxエセエバンジェリストです"
+                case 6 ..< 10: self.message = "Rxエバンジェリストまであと一歩！"
+                case 10: self.message = "おめでとう！あなたはRxエバンジェリストです！"
+                default: self.message = "凡夫"
                 }
-        }
-        .addDisposableTo(disposeBag)
+            }
+            .addDisposableTo(disposeBag)
     }
     
     override func didReceiveMemoryWarning() {
