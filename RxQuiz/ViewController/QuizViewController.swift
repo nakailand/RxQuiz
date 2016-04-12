@@ -99,8 +99,9 @@ final class QuizViewController: UIViewController {
         }
         incorrectSoundAudioPlayer.prepareToPlay()
         
-        questions.asDriver()
+        questions.asObservable()
             .filter { $0.isEmpty }
+            .asDriver(onErrorJustReturn: [])
             .driveNext { [unowned self] _ in
                 let questions: [Question] = (JSONFromFile("Quiz")?["questions"].flatMap(decode))!
                 questions.shuffle().toObservable()
@@ -113,8 +114,8 @@ final class QuizViewController: UIViewController {
             .addDisposableTo(disposeBag)
         
         buttons.forEach { button in
-            button.rx_tap.asDriver()
-                .driveNext { [unowned self] in
+            button.rx_tap
+                .subscribeNext { [unowned self] in
                     if button.titleLabel!.text! == self.currentAnswer.value {
                         self.correctAnswerCount.value += 1
                         correctSoundAudioPlayer.play()
