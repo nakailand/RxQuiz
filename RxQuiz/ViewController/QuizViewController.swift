@@ -101,8 +101,7 @@ final class QuizViewController: UIViewController {
         
         questions.asObservable()
             .filter { $0.isEmpty }
-            .asDriver(onErrorJustReturn: [])
-            .driveNext { [unowned self] _ in
+            .subscribeNext { [unowned self] _ in
                 let questions: [Question] = (JSONFromFile("Quiz")?["questions"].flatMap(decode))!
                 questions.shuffle().toObservable()
                     .take(10)
@@ -169,7 +168,6 @@ final class QuizViewController: UIViewController {
             .addDisposableTo(disposeBag)
         
         currentQuestion.asDriver()
-            .skip(1)
             .driveNext { [unowned self] question in
                 self.beforeImageView.image = UIImage(named: question.beforeImage)
                 self.afterImageView.image = UIImage(named: question.afterImage)

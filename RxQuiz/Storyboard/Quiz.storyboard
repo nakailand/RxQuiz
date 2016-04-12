@@ -4,7 +4,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Quiz View Controller-->
@@ -20,19 +19,19 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ao8-vd-qt6">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="120"/>
+                                <rect key="frame" x="0.0" y="20" width="600" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="6wJ-FT-DCb"/>
                                 </constraints>
                             </imageView>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="k7D-Kb-dYf">
-                                <rect key="frame" x="0.0" y="157" width="600" height="80"/>
+                                <rect key="frame" x="0.0" y="177" width="600" height="80"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="80" id="Qyc-we-zfm"/>
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="?" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="V7E-dg-1DJ">
-                                <rect key="frame" x="279" y="128" width="42" height="21"/>
+                                <rect key="frame" x="279" y="148" width="42" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="42" id="EWH-WE-Afy"/>
                                     <constraint firstAttribute="height" constant="21" id="ekw-Mc-GnT"/>
@@ -66,7 +65,7 @@
                                 <state key="normal" title="Button2"/>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9Oi-U7-LgA">
-                                <rect key="frame" x="250" y="245" width="100" height="21"/>
+                                <rect key="frame" x="250" y="265" width="100" height="21"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="100" id="SQI-jw-XUE"/>
                                 </constraints>
@@ -87,58 +86,28 @@
                         <constraints>
                             <constraint firstItem="lbp-Yl-kKp" firstAttribute="top" secondItem="SDA-eD-aUb" secondAttribute="bottom" id="718-ro-Dpe"/>
                             <constraint firstAttribute="trailingMargin" secondItem="LZd-Tq-9r4" secondAttribute="trailing" constant="-20" id="7P4-i6-Znu"/>
-                            <constraint firstItem="QAw-Th-g8b" firstAttribute="top" secondItem="lbp-Yl-kKp" secondAttribute="bottom" id="8ft-VF-Zl5"/>
-                            <constraint firstItem="LZd-Tq-9r4" firstAttribute="top" secondItem="SDA-eD-aUb" secondAttribute="bottom" id="9yT-jy-0q3"/>
-                            <constraint firstItem="LZd-Tq-9r4" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leading" id="BAb-FW-lub"/>
-                            <constraint firstItem="lbp-Yl-kKp" firstAttribute="width" secondItem="IPp-Mc-kJG" secondAttribute="width" multiplier="0.5" id="BLr-6z-DAn"/>
                             <constraint firstItem="SDA-eD-aUb" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leadingMargin" constant="-20" id="Dpn-bX-FIy"/>
-                            <constraint firstItem="k2O-N0-2CB" firstAttribute="top" secondItem="QAw-Th-g8b" secondAttribute="bottom" id="F8w-EV-tSk"/>
                             <constraint firstItem="QAw-Th-g8b" firstAttribute="top" secondItem="LZd-Tq-9r4" secondAttribute="bottom" id="Gdr-q9-1KJ"/>
                             <constraint firstItem="LZd-Tq-9r4" firstAttribute="top" secondItem="lbp-Yl-kKp" secondAttribute="bottom" id="JtO-3n-MPJ"/>
-                            <constraint firstItem="SDA-eD-aUb" firstAttribute="width" secondItem="IPp-Mc-kJG" secondAttribute="width" multiplier="0.5" id="LvM-hn-4uj"/>
                             <constraint firstAttribute="trailingMargin" secondItem="SDA-eD-aUb" secondAttribute="trailing" constant="-20" id="NdO-QN-PLU"/>
                             <constraint firstItem="V7E-dg-1DJ" firstAttribute="centerX" secondItem="IPp-Mc-kJG" secondAttribute="centerX" id="Omu-7q-4kF"/>
-                            <constraint firstItem="QAw-Th-g8b" firstAttribute="leading" secondItem="LZd-Tq-9r4" secondAttribute="trailing" id="R9i-lK-xI8"/>
                             <constraint firstItem="9Oi-U7-LgA" firstAttribute="centerX" secondItem="IPp-Mc-kJG" secondAttribute="centerX" id="UwB-uU-eqV"/>
                             <constraint firstAttribute="trailingMargin" secondItem="QAw-Th-g8b" secondAttribute="trailing" constant="-20" id="Z26-Rb-F2I"/>
                             <constraint firstItem="QAw-Th-g8b" firstAttribute="top" secondItem="LZd-Tq-9r4" secondAttribute="bottom" id="Z2L-La-kh8"/>
                             <constraint firstAttribute="trailingMargin" secondItem="ao8-vd-qt6" secondAttribute="trailing" constant="-20" id="Zcr-do-DCI"/>
-                            <constraint firstItem="QAw-Th-g8b" firstAttribute="width" secondItem="IPp-Mc-kJG" secondAttribute="width" multiplier="0.5" id="aco-It-cvH"/>
                             <constraint firstItem="k2O-N0-2CB" firstAttribute="top" secondItem="QAw-Th-g8b" secondAttribute="bottom" id="ae3-hI-ykJ"/>
                             <constraint firstAttribute="trailingMargin" secondItem="lbp-Yl-kKp" secondAttribute="trailing" constant="-20" id="coY-lK-e31"/>
-                            <constraint firstItem="lbp-Yl-kKp" firstAttribute="leading" secondItem="SDA-eD-aUb" secondAttribute="trailing" id="esI-RP-y4u"/>
                             <constraint firstAttribute="trailingMargin" secondItem="k7D-Kb-dYf" secondAttribute="trailing" constant="-20" id="fMt-Vl-1sa"/>
                             <constraint firstItem="lbp-Yl-kKp" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leadingMargin" constant="-20" id="fSD-hH-ygW"/>
-                            <constraint firstItem="SDA-eD-aUb" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leading" id="gH4-Gw-2bx"/>
-                            <constraint firstItem="ao8-vd-qt6" firstAttribute="top" secondItem="IPp-Mc-kJG" secondAttribute="topMargin" id="gPy-Jl-jX8"/>
-                            <constraint firstItem="SDA-eD-aUb" firstAttribute="top" secondItem="9Oi-U7-LgA" secondAttribute="bottom" constant="22" id="gSG-nG-CCQ"/>
+                            <constraint firstItem="ao8-vd-qt6" firstAttribute="top" secondItem="IPp-Mc-kJG" secondAttribute="topMargin" constant="20" id="gPy-Jl-jX8"/>
                             <constraint firstItem="k7D-Kb-dYf" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leadingMargin" constant="-20" id="h53-TC-KkU"/>
                             <constraint firstItem="LZd-Tq-9r4" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leadingMargin" constant="-20" id="iBW-Rm-Wcr"/>
                             <constraint firstItem="ao8-vd-qt6" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leadingMargin" constant="-20" id="ic6-eh-v4a"/>
                             <constraint firstItem="V7E-dg-1DJ" firstAttribute="top" secondItem="ao8-vd-qt6" secondAttribute="bottom" constant="8" id="iqg-ys-9nl"/>
                             <constraint firstItem="k7D-Kb-dYf" firstAttribute="top" secondItem="V7E-dg-1DJ" secondAttribute="bottom" constant="8" id="paU-9Q-cR7"/>
                             <constraint firstItem="9Oi-U7-LgA" firstAttribute="top" secondItem="k7D-Kb-dYf" secondAttribute="bottom" constant="8" id="qfL-Cv-Jh0"/>
-                            <constraint firstItem="k2O-N0-2CB" firstAttribute="top" secondItem="LZd-Tq-9r4" secondAttribute="bottom" id="skS-PR-fSI"/>
-                            <constraint firstItem="LZd-Tq-9r4" firstAttribute="width" secondItem="IPp-Mc-kJG" secondAttribute="width" multiplier="1:2" id="yQU-dB-L0x"/>
                             <constraint firstItem="QAw-Th-g8b" firstAttribute="leading" secondItem="IPp-Mc-kJG" secondAttribute="leadingMargin" constant="-20" id="zY6-97-TNN"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="LvM-hn-4uj"/>
-                                <exclude reference="gH4-Gw-2bx"/>
-                                <exclude reference="gSG-nG-CCQ"/>
-                                <exclude reference="BLr-6z-DAn"/>
-                                <exclude reference="esI-RP-y4u"/>
-                                <exclude reference="9yT-jy-0q3"/>
-                                <exclude reference="BAb-FW-lub"/>
-                                <exclude reference="yQU-dB-L0x"/>
-                                <exclude reference="8ft-VF-Zl5"/>
-                                <exclude reference="R9i-lK-xI8"/>
-                                <exclude reference="aco-It-cvH"/>
-                                <exclude reference="F8w-EV-tSk"/>
-                                <exclude reference="skS-PR-fSI"/>
-                            </mask>
-                        </variation>
                     </view>
                     <connections>
                         <outlet property="afterImageView" destination="k7D-Kb-dYf" id="JsA-Kk-RnT"/>
