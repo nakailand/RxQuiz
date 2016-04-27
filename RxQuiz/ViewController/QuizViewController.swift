@@ -15,7 +15,6 @@ import Social
 
 final class QuizViewController: UIViewController {
     @IBOutlet weak var timeLabel: UILabel!
-    private var message = ""
     private var startDate = NSDate()
     @IBOutlet weak var beforeImageView: UIImageView!
     @IBOutlet weak var afterImageView: UIImageView!
@@ -127,43 +126,57 @@ final class QuizViewController: UIViewController {
         }
         
         currentQuestionIndex.asDriver()
+            .filter { [unowned self] in $0 < self.questions.value.endIndex }
             .driveNext { [unowned self] count in
-                switch count {
-                case self.questions.value.endIndex:
-                    func restart() {
-                        self.questions.value.removeAll()
-                        self.currentQuestionIndex.value = 0
-                        self.correctAnswerCount.value = 0
-                        self.startDate = NSDate()
+                let question = self.questions.value[count]
+                self.currentQuestion.value = question
+                self.currentAnswer.value = question.answer
+            }
+            .addDisposableTo(disposeBag)
+        
+        currentQuestionIndex.asDriver()
+            .filter { [unowned self] in $0 == self.questions.value.endIndex }
+            .withLatestFrom(correctAnswerCount.asDriver()
+                .map { count -> String in
+                    switch count {
+                    case 0 ..< 3: return "Rx素人です"
+                    case 3 ..< 6: return "Rxエセエバンジェリストです"
+                    case 6 ..< 10: return "Rxエバンジェリストまであと一歩！"
+                    case 10: return "おめでとう！あなたはRxエバンジェリストです！"
+                    default: return "凡夫"
                     }
-                    
-                    let alertController = UIAlertController(
-                        title: "10問中\(self.correctAnswerCount.value)問正解",
-                        message: "\(self.timeLabel!.text!)秒\n\(self.message)",
-                        preferredStyle: .Alert
-                    )
-                    
-                    let okAction = UIAlertAction(title: "もう一度", style: .Default) { _ in
+                }
+            )
+            .driveNext { [unowned self] message in
+                func restart() {
+                    self.questions.value.removeAll()
+                    self.currentQuestionIndex.value = 0
+                    self.correctAnswerCount.value = 0
+                    self.startDate = NSDate()
+                }
+                
+                let alertController = UIAlertController(
+                    title: "10問中\(self.correctAnswerCount.value)問正解",
+                    message: "\(self.timeLabel!.text!)秒\n\(message)",
+                    preferredStyle: .Alert
+                )
+                
+                let okAction = UIAlertAction(title: "もう一度", style: .Default) { _ in
+                    restart()
+                }
+                
+                let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { [unowned self] _ in
+                    let composeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
+                    composeViewController.completionHandler = { _ in
                         restart()
                     }
-                    
-                    let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { [unowned self] _ in
-                        let composeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
-                        composeViewController.completionHandler = { _ in
-                            restart()
-                        }
-                        composeViewController.setInitialText("10問中\(self.correctAnswerCount.value)問正解\n\(self.timeLabel!.text!)秒\n\(self.message)\n#Rx検定")
-                        self.presentViewController(composeViewController, animated: true, completion: nil)
-                    }
-                    
-                    alertController.addAction(okAction)
-                    alertController.addAction(shareAction)
-                    self.presentViewController(alertController, animated: true, completion: nil)
-                default:
-                    let question = self.questions.value[count]
-                    self.currentQuestion.value = question
-                    self.currentAnswer.value = question.answer
+                    composeViewController.setInitialText("10問中\(self.correctAnswerCount.value)問正解\n\(self.timeLabel!.text!)秒\n\(message)\n#Rx検定")
+                    self.presentViewController(composeViewController, animated: true, completion: nil)
                 }
+                
+                alertController.addAction(okAction)
+                alertController.addAction(shareAction)
+                self.presentViewController(alertController, animated: true, completion: nil)
             }
             .addDisposableTo(disposeBag)
         
@@ -180,18 +193,6 @@ final class QuizViewController: UIViewController {
                 let answerArray = [answer, incorrectAnswers[0], incorrectAnswers[1], incorrectAnswers[2]].shuffle()
                 self.buttons.enumerate().forEach{ (number, button) in
                     button.setTitle(answerArray[number], forState: .Normal)
-                }
-            }
-            .addDisposableTo(disposeBag)
-        
-        correctAnswerCount.asObservable()
-            .subscribeNext { [unowned self] count in
-                switch count {
-                case 0 ..< 3: self.message = "Rx素人です"
-                case 3 ..< 6: self.message = "Rxエセエバンジェリストです"
-                case 6 ..< 10: self.message = "Rxエバンジェリストまであと一歩！"
-                case 10: self.message = "おめでとう！あなたはRxエバンジェリストです！"
-                default: self.message = "凡夫"
                 }
             }
             .addDisposableTo(disposeBag)
