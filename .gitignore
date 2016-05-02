@@ -37,11 +37,11 @@ Carthage/Build
 .DS_Store
 
 ### fastlane ###
-fastlane/report.xml
-fastlane/test_output
+fastlane/
 Moonside.app.dSYM.zip
 Preview.html
 *.mobileprovision
+screenshots/
 
 ### jazzy ###
 jazzy/doc

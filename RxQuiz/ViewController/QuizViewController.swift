@@ -139,11 +139,11 @@ final class QuizViewController: UIViewController {
             .withLatestFrom(correctAnswerCount.asDriver()
                 .map { count -> String in
                     switch count {
-                    case 0 ..< 3: return "Rx素人です"
-                    case 3 ..< 6: return "Rxエセエバンジェリストです"
-                    case 6 ..< 10: return "Rxエバンジェリストまであと一歩！"
-                    case 10: return "おめでとう！あなたはRxエバンジェリストです！"
-                    default: return "凡夫"
+                    case 0 ..< 3: return "You're a Rx beginner."
+                    case 3 ..< 6: return "You're a faked Rx evangelist."
+                    case 6 ..< 10: return "You're an almost real Rx evangelist."
+                    case 10: return "Congraturations! You're a real evangelist."
+                    default: return "fool"
                     }
                 }
             )
@@ -156,21 +156,21 @@ final class QuizViewController: UIViewController {
                 }
                 
                 let alertController = UIAlertController(
-                    title: "10問中\(self.correctAnswerCount.value)問正解",
-                    message: "\(self.timeLabel!.text!)秒\n\(message)",
+                    title: "\(self.correctAnswerCount.value) questions correct",
+                    message: "\(self.timeLabel!.text!)seconds\n\(message)",
                     preferredStyle: .Alert
                 )
                 
-                let okAction = UIAlertAction(title: "もう一度", style: .Default) { _ in
+                let okAction = UIAlertAction(title: "Try Again", style: .Default) { _ in
                     restart()
                 }
                 
-                let shareAction = UIAlertAction(title: "Twitterでシェアする", style: .Default) { [unowned self] _ in
+                let shareAction = UIAlertAction(title: "Share with Twitter", style: .Default) { [unowned self] _ in
                     let composeViewController = SLComposeViewController(forServiceType: SLServiceTypeTwitter)
                     composeViewController.completionHandler = { _ in
                         restart()
                     }
-                    composeViewController.setInitialText("10問中\(self.correctAnswerCount.value)問正解\n\(self.timeLabel!.text!)秒\n\(message)\n#Rx検定")
+                    composeViewController.setInitialText("\(self.correctAnswerCount.value) questions correct\n\(self.timeLabel!.text!)seconds\n\(message)\n#RxMarbleQuiz")
                     self.presentViewController(composeViewController, animated: true, completion: nil)
                 }
                 
